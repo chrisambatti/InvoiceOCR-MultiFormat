@@ -62,6 +62,10 @@ https://github.com/tesseract-ocr/tesseract
 
 Make sure the executable path is configured correctly.
 ### 1️⃣ Clone the repository
+```bash
+git clone https://github.com/chrisambatti/InvoiceOCR-MultiFormat.git
+cd InvoiceOCR-MultiFormat
+
 ▶️ Usage
 
 Run the application
@@ -127,6 +131,3 @@ Create a feature branch
 Commit your changes
 
 Submit a pull request
-```bash
-git clone https://github.com/chrisambatti/InvoiceOCR-MultiFormat.git
-cd InvoiceOCR-MultiFormat
