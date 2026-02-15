@@ -57,7 +57,7 @@ Designed for automation, accounting workflows, and document digitization, this t
 
 Tesseract OCR installed on your system
 
-👉 Download Tesseract:
+## 👉 Download Tesseract:
 https://github.com/tesseract-ocr/tesseract
 
 Make sure the executable path is configured correctly.
@@ -65,8 +65,8 @@ Make sure the executable path is configured correctly.
 ```bash
 git clone https://github.com/chrisambatti/InvoiceOCR-MultiFormat.git
 cd InvoiceOCR-MultiFormat
-
-▶️ Usage
+```
+## ▶️ Usage
 
 Run the application
 
@@ -76,7 +76,7 @@ Select an invoice file (PDF/Image)
 
 View extracted data instantly
 
-📂 Supported File Types
+## 📂 Supported File Types
 
 PDF (.pdf)
 
@@ -86,7 +86,7 @@ PNG (.png)
 
 Scanned documents
 
-📊 Example Use Cases
+## 📊 Example Use Cases
 
 Accounting automation
 
@@ -98,7 +98,7 @@ Data digitization projects
 
 OCR research and experimentation
 
-⚠️ Limitations
+## ⚠️ Limitations
 
 Accuracy depends on image quality
 
@@ -108,7 +108,7 @@ Complex layouts may require additional parsing logic
 
 Very low-resolution scans may produce incorrect results
 
-🔮 Future Enhancements
+## 🔮 Future Enhancements
 
 Batch processing of multiple invoices
 
@@ -120,7 +120,7 @@ AI-assisted field detection
 
 Support for more document types
 
-🤝 Contributing
+## 🤝 Contributing
 
 Contributions are welcome!
 
