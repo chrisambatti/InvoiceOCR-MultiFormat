@@ -1,0 +1,16 @@
+.vs/
+bin/
+obj/
+*.user
+*.suo
+*.cache
+*.log
+*.db
+*.opendb
+*.VC.db
+*.tmp
+*.pdb
+*.exe
+*.dll
+*.ide
+*.tlog
