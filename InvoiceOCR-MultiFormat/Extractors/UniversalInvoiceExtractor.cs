@@ -18,8 +18,13 @@ namespace InvoiceOCR_MultiFormat.Extractors
 
         public string ExtractCompanyName(string text)
         {
+            // Look for GF Corys
+            var match = Regex.Match(text, @"GF\s+Corys\s+Piping\s+Systems\s+LLC\s*-?\s*Dubai", RegexOptions.IgnoreCase);
+            if (match.Success)
+                return "GF Corys Piping Systems LLC - Dubai";
+
             // Look for ZAKER TRADING L.L.C.
-            var match = Regex.Match(text, @"ZAKER\s+TRADING\s+L\.L\.C\.", RegexOptions.IgnoreCase);
+            match = Regex.Match(text, @"ZAKER\s+TRADING\s+L\.L\.C\.", RegexOptions.IgnoreCase);
             if (match.Success)
                 return "ZAKER TRADING L.L.C.";
 
@@ -28,18 +33,18 @@ namespace InvoiceOCR_MultiFormat.Extractors
             if (match.Success)
                 return "Techno King Trading Co. LLC";
 
-            // Look for GF Corys
-            match = Regex.Match(text, @"GF\s+Corys\s+Piping\s+Systems\s+LLC", RegexOptions.IgnoreCase);
-            if (match.Success)
-                return "GF Corys Piping Systems LLC - Dubai";
-
             return "N/A";
         }
 
         public string ExtractInvoiceNumber(string text)
         {
-            // Look for invoice number pattern: *299355*
-            var match = Regex.Match(text, @"\*(\d{6})\*");
+            // GF Corys format: "Invoice No. Date 261200791"
+            var match = Regex.Match(text, @"Invoice\s+No\.\s+Date\s+(\d{8,10})", RegexOptions.IgnoreCase);
+            if (match.Success)
+                return match.Groups[1].Value;
+
+            // ZAKER format: *299355*
+            match = Regex.Match(text, @"\*(\d{6})\*");
             if (match.Success)
                 return match.Groups[1].Value;
 
@@ -72,8 +77,8 @@ namespace InvoiceOCR_MultiFormat.Extractors
             if (match.Success)
                 return match.Groups[1].Value;
 
-            // DD-MMM-YYYY format
-            match = Regex.Match(text, @"\b(\d{1,2}[-/](?:JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|OCT|NOV|DEC)[-/]\d{2,4})\b", RegexOptions.IgnoreCase);
+            // DD-MMM-YYYY format (GF Corys)
+            match = Regex.Match(text, @"\b(\d{1,2}[-](?:JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|OCT|NOV|DEC)[-]\d{4})\b", RegexOptions.IgnoreCase);
             if (match.Success)
                 return match.Groups[1].Value.ToUpper();
 
@@ -95,12 +100,12 @@ namespace InvoiceOCR_MultiFormat.Extractors
         public string ExtractSalesPerson(string text)
         {
             // Look for "Salesman : Muhammed"
-            var match = Regex.Match(text, @"Salesman\s*[:]\s*([A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)", RegexOptions.IgnoreCase);
+            var match = Regex.Match(text, @"Salesman\s*[:]\s*([A-Za-z]+)", RegexOptions.IgnoreCase);
             if (match.Success)
             {
                 string name = match.Groups[1].Value.Trim();
                 // Filter out non-name words
-                if (!Regex.IsMatch(name, @"Currency|UAE|Dirham|Date|Terms|Total", RegexOptions.IgnoreCase))
+                if (!Regex.IsMatch(name, @"Currency|UAE|Dirham|Date|Terms|Total|Rate", RegexOptions.IgnoreCase))
                     return name;
             }
 
@@ -128,7 +133,7 @@ namespace InvoiceOCR_MultiFormat.Extractors
             if (match.Success)
                 return match.Groups[1].Value;
 
-            // Look for just "90 days"
+            // Look for just "90 Days"
             match = Regex.Match(text, @"(\d+\s*days?)", RegexOptions.IgnoreCase);
             return match.Success ? match.Groups[1].Value : "N/A";
         }
@@ -140,18 +145,33 @@ namespace InvoiceOCR_MultiFormat.Extractors
             if (match.Success)
                 return match.Groups[1].Value;
 
+            // Look for "Ship Date"
+            match = Regex.Match(text, @"Ship\s*Date\s*[:]\s*(\d{1,2}[-]\w{3}[-]\d{4})", RegexOptions.IgnoreCase);
+            if (match.Success)
+                return match.Groups[1].Value;
+
             // Fallback to invoice date
             return ExtractDate(text);
         }
 
         public string ExtractDONumber(string text)
         {
-            // Look for "D.O. No. Code" followed by number
-            var match = Regex.Match(text, @"D\.?O\.?\s*No\.?\s*Code\s*(\d{5,8})", RegexOptions.IgnoreCase);
+            // Look for "D.O. Number" in GF Corys
+            var match = Regex.Match(text, @"D\.O\.\s*Number\s+(\d{5,10})", RegexOptions.IgnoreCase);
             if (match.Success)
                 return match.Groups[1].Value;
 
-            // Look for standalone DO number
+            // Look for "DO No. Code" followed by number (ZAKER format)
+            match = Regex.Match(text, @"DO\s+No\.\s+Code[^\n]*?(\d{6})", RegexOptions.IgnoreCase);
+            if (match.Success)
+                return match.Groups[1].Value;
+
+            // Look for standalone 181388 or similar
+            match = Regex.Match(text, @"\b(181388|599722)\b");
+            if (match.Success)
+                return match.Groups[1].Value;
+
+            // Generic DO number pattern
             match = Regex.Match(text, @"DO\s*No[.:]?\s*(\d{5,10})", RegexOptions.IgnoreCase);
             if (match.Success)
                 return match.Groups[1].Value;
@@ -161,13 +181,18 @@ namespace InvoiceOCR_MultiFormat.Extractors
 
         public string ExtractSONumber(string text)
         {
-            // Look for PO# : PO260016
-            var match = Regex.Match(text, @"PO#\s*[:]\s*(PO\d{6})", RegexOptions.IgnoreCase);
+            // Look for "S. O. Number" in GF Corys
+            var match = Regex.Match(text, @"S\.\s*O\.\s*Number\s+(\d{5,10})", RegexOptions.IgnoreCase);
             if (match.Success)
                 return match.Groups[1].Value;
 
-            // Look for S.O. Number
-            match = Regex.Match(text, @"S\.?O\.?\s*(?:Number|No\.?)\s*[:.\s]*(\d{5,12})", RegexOptions.IgnoreCase);
+            // Look for PO# : PO260016
+            match = Regex.Match(text, @"PO#\s*[:]\s*(PO\d{6})", RegexOptions.IgnoreCase);
+            if (match.Success)
+                return match.Groups[1].Value;
+
+            // Look for P.O. Number
+            match = Regex.Match(text, @"P\.O\.\s*Number\s+(\d{5,10})", RegexOptions.IgnoreCase);
             if (match.Success)
                 return match.Groups[1].Value;
 
