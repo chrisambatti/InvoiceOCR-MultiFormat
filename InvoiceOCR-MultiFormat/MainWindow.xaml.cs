@@ -60,6 +60,11 @@ namespace InvoiceOCR_MultiFormat
 
                 string text = ocrResults.First().Text;
 
+                // ===== DEBUG: SHOW RAW OCR OUTPUT =====
+                string preview = text.Length > 3000 ? text.Substring(0, 3000) + "\n\n... (truncated)" : text;
+                MessageBox.Show(preview, "Raw OCR Output - COPY THIS TEXT", MessageBoxButton.OK, MessageBoxImage.Information);
+                // ===== END DEBUG =====
+
                 // Step 2: Extract all fields
                 CompanyNameBox.Text = _extractor.ExtractCompanyName(text);
                 InvoiceNoBox.Text = _extractor.ExtractInvoiceNumber(text);
