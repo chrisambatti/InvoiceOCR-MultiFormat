@@ -50,13 +50,6 @@ Designed for automation, accounting workflows, and document digitization, this t
 
 ---
 
----
-
-## 🖼️ Images
-
-- ![UI](C:\Users\CHRISTOPHER\Source\Repos\InvoiceOCR-MultiFormat\InvoiceOCR-MultiFormat\assets\demo2.png) 
-
-
 
 
 ---
