@@ -54,7 +54,7 @@ Designed for automation, accounting workflows, and document digitization, this t
 
 ## 🖼️ Images
 
-- ![Login Page]("C:\Users\CHRISTOPHER\source\repos\InvoiceOCR-MultiFormat\InvoiceOCR-MultiFormat\Assets\demo1.png") 
+- ![UI]("InvoiceOCR-MultiFormat\InvoiceOCR-MultiFormat\Assets\demo1.png") 
 
 
 
