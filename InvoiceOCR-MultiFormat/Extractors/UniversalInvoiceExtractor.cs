@@ -18,7 +18,6 @@ namespace InvoiceOCR_MultiFormat.Extractors
             _tableExtractor = new MultiStrategyTableExtractor();
         }
 
-        // Helper method to extract value after a label
         private string ExtractValueAfterLabel(string text, string[] labelPatterns, string valuePattern = @"[\s:]*(.+?)(?:\n|$)")
         {
             foreach (var label in labelPatterns)
@@ -38,13 +37,13 @@ namespace InvoiceOCR_MultiFormat.Extractors
 
         public string ExtractCompanyName(string text)
         {
-            // Strategy 1: Look for ZAKER pattern (handles "ZAKER TAX INVOICE" and "TRADING L.L.C.")
+            // Strategy 1
             if (text.Contains("ZAKER") && Regex.IsMatch(text, @"TRADING\s+L\.L\.C\.", RegexOptions.IgnoreCase))
             {
                 return "ZAKER TRADING L.L.C.";
             }
 
-            // Strategy 2: Look for company in header area (first 500 chars)
+            // Strategy 2
             var headerText = text.Substring(0, Math.Min(500, text.Length));
             var lines = headerText.Split(new[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries)
                 .Select(l => l.Trim())
@@ -52,7 +51,7 @@ namespace InvoiceOCR_MultiFormat.Extractors
                 .Take(15)
                 .ToList();
 
-            // Strategy 3: Look for Beneficiary field
+            // Strategy 3
             var beneficiaryMatch = Regex.Match(text, @"Beneficiary\s*[:.]?\s*([A-Z\s]+(?:LLC|L\.L\.C\.|Ltd|Limited|Inc|Corp|Trading))", RegexOptions.IgnoreCase);
             if (beneficiaryMatch.Success)
             {
@@ -62,7 +61,7 @@ namespace InvoiceOCR_MultiFormat.Extractors
                     return company;
             }
 
-            // Strategy 4: Look in first few lines for company with LLC/Ltd/etc
+            // Strategy 4
             foreach (var line in lines)
             {
                 if (Regex.IsMatch(line, @"^(TAX\s*INVOICE|Invoice|Bill\s+To|Date|#|Terms|Page|Bank|Account|Currency|Swift|IBAN)", RegexOptions.IgnoreCase))
@@ -80,7 +79,7 @@ namespace InvoiceOCR_MultiFormat.Extractors
                 }
             }
 
-            // Strategy 5: First substantial line
+            // Strategy 5
             foreach (var line in lines)
             {
                 if (line.Length >= 5 && line.Length <= 60 &&
@@ -226,7 +225,7 @@ namespace InvoiceOCR_MultiFormat.Extractors
                     return name;
             }
 
-            // Pattern 4: All-caps format (BIJU V. PILLAI)
+            // Pattern 4(BIJU V. PILLAI)
             match = Regex.Match(text, @"\b([A-Z]{3,}\s+[A-Z]\.\s+[A-Z]{3,})\b");
             if (match.Success)
             {
@@ -268,18 +267,16 @@ namespace InvoiceOCR_MultiFormat.Extractors
 
         public string ExtractShipDate(string text)
         {
-            // Pattern 1: Look for the table header line with "Ship Date D.O. Number"
-            // Then find the corresponding values on the next line: "90 Days  11-JAN-2026    34042480"
+            // Pattern 1
             var lines = text.Split(new[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
 
             for (int i = 0; i < lines.Length - 1; i++)
             {
                 var line = lines[i];
 
-                // Check if this line contains the headers
+                
                 if (Regex.IsMatch(line, @"Ship\s*Date.*D\.O\.\s*Number", RegexOptions.IgnoreCase))
                 {
-                    // Look in the next line for the date pattern
                     var nextLine = lines[i + 1];
                     var dateMatch = Regex.Match(nextLine, @"\b(\d{1,2}[-]\w{3}[-]\d{4})\b");
                     if (dateMatch.Success)
@@ -287,12 +284,12 @@ namespace InvoiceOCR_MultiFormat.Extractors
                 }
             }
 
-            // Pattern 2: "Ship Date :" with colon (other formats)
+            // Pattern 2
             var match = Regex.Match(text, @"Ship\s*Date\s*[:]\s*(\d{2}/\d{2}/\d{4}|\d{1,2}[-]\w{3}[-]\d{4})", RegexOptions.IgnoreCase);
             if (match.Success)
                 return match.Groups[1].Value;
 
-            // Pattern 3: "Supply Date"
+            // Pattern 3
             match = Regex.Match(text, @"Supply\s*Date\s*[:]\s*(\d{2}/\d{2}/\d{4})", RegexOptions.IgnoreCase);
             if (match.Success)
                 return match.Groups[1].Value;
@@ -302,37 +299,35 @@ namespace InvoiceOCR_MultiFormat.Extractors
 
         public string ExtractDONumber(string text)
         {
-            // Pattern 1: Look for the table header line with "Ship Date D.O. Number"
-            // Then find the 8-digit number after the date on the next line
+            // Pattern 1
             var lines = text.Split(new[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
 
             for (int i = 0; i < lines.Length - 1; i++)
             {
                 var line = lines[i];
 
-                // Check if this line contains the headers
                 if (Regex.IsMatch(line, @"Ship\s*Date.*D\.O\.\s*Number", RegexOptions.IgnoreCase))
                 {
-                    // Look in the next line for: date followed by 8-digit number
-                    // Pattern: "90 Days  11-JAN-2026    34042480"
+
+                    // Pattern
                     var nextLine = lines[i + 1];
                     var match = Regex.Match(nextLine, @"(\d{1,2}[-]\w{3}[-]\d{4})\s+(\d{8})");
                     if (match.Success)
-                        return match.Groups[2].Value; // The 8-digit number
+                        return match.Groups[2].Value; 
                 }
             }
 
-            // Pattern 2: "D.O. Number" with colon
+            // Pattern 2
             var doMatch = Regex.Match(text, @"D\.O\.\s*Number\s*[:.\s]*(\d{5,10})", RegexOptions.IgnoreCase);
             if (doMatch.Success)
                 return doMatch.Groups[1].Value;
 
-            // Pattern 3: "DO No." in table
+            // Pattern 3
             doMatch = Regex.Match(text, @"DO\s*No\.?\s*[:.\s]*(\d{5,10})", RegexOptions.IgnoreCase);
             if (doMatch.Success)
                 return doMatch.Groups[1].Value;
 
-            // Pattern 4: Look for DO No. in table header, then scan next lines
+            // Pattern 4: 
             for (int i = 0; i < lines.Length; i++)
             {
                 if (Regex.IsMatch(lines[i], @"DO\s*No\.", RegexOptions.IgnoreCase))
@@ -350,23 +345,22 @@ namespace InvoiceOCR_MultiFormat.Extractors
         }
         public string ExtractSONumber(string text)
         {
-            // Pattern 1: "S. O. Number" followed by number on same line
-            // Looking for: Ship Date D.O. Number S. O. Number ... 11-JAN-2026 34042480 2513208676
+            // Pattern 1: 
             var match = Regex.Match(text, @"S\.\s*O\.\s*Number[^\n]*?(\d{10})", RegexOptions.IgnoreCase);
             if (match.Success)
                 return match.Groups[1].Value;
 
-            // Pattern 2: "S.O. Number" with colon
+            // Pattern 2: 
             match = Regex.Match(text, @"S\.?\s*O\.?\s*Number\s*[:.]?\s*(\d{5,12})", RegexOptions.IgnoreCase);
             if (match.Success)
                 return match.Groups[1].Value;
 
-            // Pattern 3: "SO Number" or "SO No"
+            // Pattern 3: 
             match = Regex.Match(text, @"SO\s*(?:Number|No\.?)\s*[:.]?\s*(\d{5,10})", RegexOptions.IgnoreCase);
             if (match.Success)
                 return match.Groups[1].Value;
 
-            // Pattern 4: "P.O. Number" or "PO#"
+            // Pattern 4: 
             match = Regex.Match(text, @"P\.?O\.?\s*(?:Number|No\.?|#)\s*[:.]?\s*(PO\d{6}|\d{5,10})", RegexOptions.IgnoreCase);
             if (match.Success)
                 return match.Groups[1].Value;
