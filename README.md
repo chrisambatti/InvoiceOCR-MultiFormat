@@ -50,10 +50,6 @@ Designed for automation, accounting workflows, and document digitization, this t
 
 ---
 
-
-
----
-
 ## 📦 Installation
 2️⃣ Install prerequisites
 
