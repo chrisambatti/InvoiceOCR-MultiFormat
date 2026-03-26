@@ -75,7 +75,7 @@ Click Upload
 Select an invoice file (PDF/Image)
 
 View extracted data instantly
-
+```
 ## 📂 Supported File Types
 
 PDF (.pdf)
@@ -85,7 +85,7 @@ JPEG (.jpg / .jpeg)
 PNG (.png)
 
 Scanned documents
-
+```
 ## 📊 Example Use Cases
 
 Accounting automation
@@ -97,7 +97,7 @@ Accounts payable workflows
 Data digitization projects
 
 OCR research and experimentation
-
+```
 ## ⚠️ Limitations
 
 Accuracy depends on image quality
@@ -107,7 +107,7 @@ Handwritten invoices may not be recognized
 Complex layouts may require additional parsing logic
 
 Very low-resolution scans may produce incorrect results
-
+```
 ## 🔮 Future Enhancements
 
 Batch processing of multiple invoices
@@ -119,7 +119,7 @@ Database integration
 AI-assisted field detection
 
 Support for more document types
-
+```
 ## 🤝 Contributing
 
 Contributions are welcome!
