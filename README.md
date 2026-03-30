@@ -76,6 +76,7 @@ Click Upload
 Select an invoice file (PDF/Image)
 
 View extracted data instantly
+
 ---
 ## 📂 Supported File Types
 
