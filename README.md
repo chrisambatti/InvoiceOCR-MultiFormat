@@ -108,6 +108,7 @@ Handwritten invoices may not be recognized
 Complex layouts may require additional parsing logic
 
 Very low-resolution scans may produce incorrect results
+
 ---
 ## 🔮 Future Enhancements
 
