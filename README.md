@@ -86,6 +86,7 @@ JPEG (.jpg / .jpeg)
 PNG (.png)
 
 Scanned documents
+
 ---
 ## 📊 Example Use Cases
 
@@ -98,6 +99,7 @@ Accounts payable workflows
 Data digitization projects
 
 OCR research and experimentation
+
 ---
 ## ⚠️ Limitations
 
@@ -121,6 +123,7 @@ Database integration
 AI-assisted field detection
 
 Support for more document types
+
 ---
 ## 🤝 Contributing
 
